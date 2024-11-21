@@ -2,15 +2,11 @@
 
 set -euo pipefail
 
-# Fetch all Docker releases from GitHub API
-releases_path=https://api.github.com/repos/docker/cli/releases
-cmd="curl -s"
-if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-  cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
-fi
+# Get all available versions from Docker's download page
+curl -fsSL "https://download.docker.com/mac/static/stable/x86_64/" | \
+  grep -o 'docker-[0-9]*\.[0-9]*\.[0-9]*\.tgz' | \
+  sed 's/docker-\(.*\)\.tgz/\1/' | \
+  sort -t. -k 1,1n -k 2,2n -k 3,3n | \
+  uniq
 
-# Process JSON with sed and sort versions
-versions=$(eval "$cmd $releases_path" | grep -oE "tag_name\": *\"v[0-9]+\.[0-9]+\.[0-9]+\"" | sed 's/tag_name\": *\"v//;s/\"//' | sort -t. -k 1,1n -k 2,2n -k 3,3n)
-
-# Output the versions
-echo "$versions"
+exit 0
