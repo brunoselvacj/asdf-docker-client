@@ -2,6 +2,22 @@
 
 set -euo pipefail
 
+# Check required environment variables
+if [ -z "${ASDF_INSTALL_TYPE:-}" ]; then
+  echo "Missing ASDF_INSTALL_TYPE environment variable" >&2
+  exit 1
+fi
+
+if [ -z "${ASDF_INSTALL_VERSION:-}" ]; then
+  echo "Missing ASDF_INSTALL_VERSION environment variable" >&2
+  exit 1
+fi
+
+if [ -z "${ASDF_INSTALL_PATH:-}" ]; then
+  echo "Missing ASDF_INSTALL_PATH environment variable" >&2
+  exit 1
+fi
+
 current_script_path=${BASH_SOURCE[0]}
 plugin_dir=$(dirname "$(dirname "$current_script_path")")
 
