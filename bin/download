@@ -27,4 +27,14 @@ install_docker_client() {
   rm -rf "${tmp_download_dir}"
 }
 
-install_docker_client "$ASDF_DOWNLOAD_VERSION" "$ASDF_DOWNLOAD_PATH"
+# Handle parameters from both ASDF and manual testing
+version="${ASDF_DOWNLOAD_VERSION:-${1:-}}"
+download_path="${ASDF_DOWNLOAD_PATH:-${2:-}}"
+
+if [ -z "$version" ] || [ -z "$download_path" ]; then
+  echo "Usage: download <version> <download-path>"
+  echo "   or  ASDF_DOWNLOAD_VERSION=<version> ASDF_DOWNLOAD_PATH=<path> download"
+  exit 1
+fi
+
+install_docker_client "$version" "$download_path"
