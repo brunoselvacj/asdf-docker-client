@@ -2,18 +2,24 @@
 
 set -euo pipefail
 
-install_docker_client() {
-  local version=$1
-  local install_path=$2
+# Handle parameters from both ASDF and manual testing
+version="${ASDF_INSTALL_VERSION:-${1:-}}"
+install_path="${ASDF_INSTALL_PATH:-${2:-}}"
+download_path="${ASDF_DOWNLOAD_PATH:-${install_path}/download}"
 
-  # Create the bin directory
-  mkdir -p "${install_path}/bin"
+if [ -z "$version" ] || [ -z "$install_path" ]; then
+  echo "Usage: install <version> <install-path>"
+  echo "   or  ASDF_INSTALL_VERSION=<version> ASDF_INSTALL_PATH=<path> install"
+  exit 1
+fi
 
-  # Move the docker binary to the bin directory
-  mv "${ASDF_DOWNLOAD_PATH}/docker" "${install_path}/bin/"
+# Create the bin directory
+mkdir -p "${install_path}/bin"
 
-  # Make the binary executable
-  chmod +x "${install_path}/bin/docker"
-}
+# Move the docker binary to the bin directory
+mv "${download_path}/docker" "${install_path}/bin/"
 
-install_docker_client "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+# Make the binary executable
+chmod +x "${install_path}/bin/docker"
+
+echo "Docker client $version installed successfully to ${install_path}/bin/docker"
