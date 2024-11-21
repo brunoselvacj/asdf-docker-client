@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+cat << 'EOF'
+Docker Client plugin for asdf version manager
+
+Installs only the Docker client binary, perfect for environments where you need
+to connect to remote Docker daemons without installing the full Docker Engine.
+
+Examples:
+  asdf install docker-client latest
+  asdf install docker-client 27.3.1
+  asdf global docker-client 27.3.1
+
+After installation, verify with:
+  docker --version
+EOF
