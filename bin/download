@@ -2,30 +2,21 @@
 
 set -euo pipefail
 
-# shellcheck source=/dev/null
-source "$(dirname "$0")/utils.sh"
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
+
+# shellcheck source=../lib/utils.bash
+source "${plugin_dir}/lib/utils.bash"
 
 mkdir -p "$ASDF_DOWNLOAD_PATH"
 
-download_docker() {
-  local version=$1
-  local download_path=$2
-  local tmp_download_dir
-  tmp_download_dir=$(mktemp -d -t docker_client_tmp_XXXXXX)
-  local platform
-  platform="$(get_platform)"
-  local arch
-  arch="$(get_arch)"
+release_file="$ASDF_DOWNLOAD_PATH/docker.tgz"
 
-  local download_url="https://download.docker.com/${platform}/static/stable/${arch}/docker-${version}.tgz"
+# Download tar.gz file to the download directory
+download_release "$ASDF_DOWNLOAD_VERSION" "$release_file"
 
-  echo "∗ Downloading Docker client version ${version}..."
-  curl -sSL "$download_url" -o "${tmp_download_dir}/docker.tgz"
+#  Extract contents of tar.gz file into the download directory
+tar -xzf "$release_file" -C "$ASDF_DOWNLOAD_PATH" docker/docker || fail "Could not extract $release_file"
 
-  echo "∗ Extracting Docker client..."
-  tar -xzf "${tmp_download_dir}/docker.tgz" -C "$download_path" docker/docker
-
-  rm -rf "${tmp_download_dir}"
-}
-
-download_docker "$ASDF_DOWNLOAD_VERSION" "$ASDF_DOWNLOAD_PATH"
+# Remove the tar.gz file since we don't need to keep it
+rm "$release_file"
