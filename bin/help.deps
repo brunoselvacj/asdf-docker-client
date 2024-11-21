@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cat << 'EOF'
+Dependencies:
+  - curl: Required for downloading Docker client binaries
+  - tar: Required for extracting downloaded archives
+
+No additional dependencies are required.
+EOF
