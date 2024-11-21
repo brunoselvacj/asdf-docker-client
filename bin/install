@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+install_docker_client() {
+  local version=$1
+  local install_path=$2
+
+  # Create the bin directory
+  mkdir -p "${install_path}/bin"
+
+  # Move the docker binary to the bin directory
+  mv "${ASDF_DOWNLOAD_PATH}/docker" "${install_path}/bin/"
+
+  # Make the binary executable
+  chmod +x "${install_path}/bin/docker"
+}
+
+install_docker_client "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
