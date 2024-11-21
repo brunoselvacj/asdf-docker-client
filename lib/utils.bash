@@ -19,7 +19,7 @@ sort_versions() {
 }
 
 list_all_versions() {
-  curl "${curl_opts[@]}" "${GH_REPO}/linux/static/stable/x86_64/" |
+  curl "${curl_opts[@]}" "${GH_REPO}/mac/static/stable/x86_64/" |
     grep -o 'docker-[0-9]*\.[0-9]*\.[0-9]*\.tgz' |
     sed 's/docker-\(.*\)\.tgz/\1/'
 }
@@ -29,7 +29,7 @@ get_platform() {
   platform=$(uname -s | tr '[:upper:]' '[:lower:]')
   case $platform in
     darwin)
-      echo "linux"  # Use Linux binaries for macOS
+      echo "mac"  # Use macOS binaries for macOS
       ;;
     linux)
       echo "linux"
@@ -48,7 +48,11 @@ get_arch() {
       echo "x86_64"
       ;;
     arm64|aarch64)
-      echo "aarch64"
+      if [ "$(get_platform)" = "mac" ]; then
+        echo "aarch64"  # Use aarch64 for Apple Silicon
+      else
+        echo "aarch64"
+      fi
       ;;
     *)
       fail "Architecture $arch is not supported"
