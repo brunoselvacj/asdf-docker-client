@@ -5,36 +5,27 @@ set -euo pipefail
 # shellcheck source=/dev/null
 source "$(dirname "$0")/utils.sh"
 
-install_docker_client() {
+mkdir -p "$ASDF_DOWNLOAD_PATH"
+
+download_docker() {
   local version=$1
   local download_path=$2
-
+  local tmp_download_dir
+  tmp_download_dir=$(mktemp -d -t docker_client_tmp_XXXXXX)
   local platform
   platform="$(get_platform)"
   local arch
   arch="$(get_arch)"
 
   local download_url="https://download.docker.com/${platform}/static/stable/${arch}/docker-${version}.tgz"
-  local tmp_download_dir
-  tmp_download_dir=$(mktemp -d -t docker_client_tmp_XXXXXX)
 
-  echo "Downloading Docker client from ${download_url}"
+  echo "∗ Downloading Docker client version ${version}..."
   curl -sSL "$download_url" -o "${tmp_download_dir}/docker.tgz"
 
-  mkdir -p "$download_path"
-  tar -xzf "${tmp_download_dir}/docker.tgz" -C "$download_path" --strip-components=1 docker/docker
+  echo "∗ Extracting Docker client..."
+  tar -xzf "${tmp_download_dir}/docker.tgz" -C "$download_path" docker/docker
 
   rm -rf "${tmp_download_dir}"
 }
 
-# Handle parameters from both ASDF and manual testing
-version="${ASDF_DOWNLOAD_VERSION:-${1:-}}"
-download_path="${ASDF_DOWNLOAD_PATH:-${2:-}}"
-
-if [ -z "$version" ] || [ -z "$download_path" ]; then
-  echo "Usage: download <version> <download-path>"
-  echo "   or  ASDF_DOWNLOAD_VERSION=<version> ASDF_DOWNLOAD_PATH=<path> download"
-  exit 1
-fi
-
-install_docker_client "$version" "$download_path"
+download_docker "$ASDF_DOWNLOAD_VERSION" "$ASDF_DOWNLOAD_PATH"

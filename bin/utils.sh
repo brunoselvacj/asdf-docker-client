@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 get_arch() {
   local arch
   arch=$(uname -m)
@@ -22,7 +24,7 @@ get_platform() {
   platform=$(uname -s | tr '[:upper:]' '[:lower:]')
   case $platform in
     darwin)
-      echo "mac"
+      echo "linux"  # Use Linux binaries for macOS
       ;;
     linux)
       echo "linux"
